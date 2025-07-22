@@ -67,7 +67,7 @@ class InstanceMonitor:
             if unallocated_instances:
                 error_message = f"Found {len(unallocated_instances)} unallocated instances older than 30 minutes. Hashes: {', '.join(unallocated_instances)}"
                 return MonitoringResult(
-                    status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                    status=HTTPStatus.SERVICE_UNAVAILABLE,
                     message=error_message,
                     instances_checked=instances_checked,
                     unallocated_instances=len(unallocated_instances),
