@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 class _Config:
     ALEPH_AGENTS_OWNER: str
     ALEPH_AGENT_CHANNEL: str
+    LIBERTAI_INSTANCES_ADDRESS: str
 
     LOG_LEVEL: int
     LOG_FILE: str | None
@@ -16,6 +17,7 @@ class _Config:
 
         self.ALEPH_AGENTS_OWNER = os.getenv("ALEPH_AGENTS_OWNER")
         self.ALEPH_AGENT_CHANNEL = os.getenv("ALEPH_AGENT_CHANNEL")
+        self.LIBERTAI_INSTANCES_ADDRESS = os.getenv("LIBERTAI_INSTANCES_ADDRESS")
 
         # Configure logging
         log_level_str = os.getenv("LOG_LEVEL", "INFO").upper()
