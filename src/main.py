@@ -141,3 +141,33 @@ async def check_aleph_credits(min_balance: float = 0, min_runway_days: float = 0
         raise HTTPException(status_code=503, detail={"errors": errors, **result})
 
     return {"status": "ok", **result}
+
+
+@app.get("/x402-credits")
+async def check_x402_credits(min_balance: float = 0):
+    """Check Aleph credit balance for the x402 selling address.
+
+    Returns 503 if balance is below the given threshold.
+    """
+    address = config.LIBERTAI_X402_ADDRESS
+    try:
+        credit_balance, cost_per_second = await fetch_aleph_credit_balance(address)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching Aleph credits: {e}")
+
+    runway_days = compute_runway_days(credit_balance, cost_per_second)
+
+    result = {
+        "address": address,
+        "credit_balance": credit_balance,
+        "cost_per_second": cost_per_second,
+        "runway_days": runway_days,
+    }
+
+    if credit_balance < min_balance:
+        raise HTTPException(
+            status_code=503,
+            detail={"errors": [f"Credit balance {credit_balance:.0f} is below minimum {min_balance:.0f}"], **result},
+        )
+
+    return {"status": "ok", **result}
