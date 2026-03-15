@@ -155,19 +155,22 @@ async def check_x402_credits(min_balance: float = 0):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching Aleph credits: {e}")
 
+    # Credit balance has 6 decimals, convert to dollars
+    credit_balance_dollars = credit_balance / 1_000_000
+
     runway_days = compute_runway_days(credit_balance, cost_per_second)
 
     result = {
         "address": address,
-        "credit_balance": credit_balance,
+        "credit_balance": credit_balance_dollars,
         "cost_per_second": cost_per_second,
         "runway_days": runway_days,
     }
 
-    if credit_balance < min_balance:
+    if credit_balance_dollars < min_balance:
         raise HTTPException(
             status_code=503,
-            detail={"errors": [f"Credit balance {credit_balance:.0f} is below minimum {min_balance:.0f}"], **result},
+            detail={"errors": [f"Credit balance ${credit_balance_dollars:.2f} is below minimum ${min_balance:.2f}"], **result},
         )
 
     return {"status": "ok", **result}
