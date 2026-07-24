@@ -1,15 +1,15 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 
 from aleph.sdk import AlephHttpClient
 from aleph.sdk.query.filters import MessageFilter
-from aleph_message.models import MessageType, AlephMessage
+from aleph_message.models import AlephMessage, MessageType
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from src.config import config
 from src.utils.aleph import fetch_instance_ip
-from src.utils.aleph_credits import fetch_aleph_credit_balance, compute_runway_days
+from src.utils.aleph_credits import compute_runway_days, fetch_aleph_credit_balance
 
 app = FastAPI(title="LibertAI Monitoring")
 
@@ -43,7 +43,7 @@ class InstanceMonitor:
             # Fetch all instance messages for the address
             messages: list[AlephMessage] = await InstanceMonitor.fetch_instance_messages(config.ALEPH_AGENTS_OWNER)
 
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             threshold_time = current_time - timedelta(minutes=30)
 
             unallocated_instances: list[str] = []
@@ -82,7 +82,7 @@ class InstanceMonitor:
                 )
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error monitoring instances: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error monitoring instances: {e!s}")
 
 
 monitor = InstanceMonitor()
