@@ -143,6 +143,39 @@ async def check_aleph_credits(min_balance: float = 0, min_runway_days: float = 0
     return {"status": "ok", **result}
 
 
+@app.get("/liberclaw-credits")
+async def check_liberclaw_credits(min_balance: float = 0, min_runway_days: float = 0):
+    """Check Aleph credit balance and runway for the LiberClaw agent deployer address.
+
+    Returns 503 if balance or runway is below the given thresholds.
+    """
+    address = config.LIBERCLAW_INSTANCES_ADDRESS
+    try:
+        credit_balance, cost_per_second = await fetch_aleph_credit_balance(address)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching Aleph credits: {e}")
+
+    runway_days = compute_runway_days(credit_balance, cost_per_second)
+
+    errors: list[str] = []
+    if credit_balance < min_balance:
+        errors.append(f"Credit balance {credit_balance:.0f} is below minimum {min_balance:.0f}")
+    if runway_days is not None and runway_days < min_runway_days:
+        errors.append(f"Runway {runway_days:.1f} days is below minimum {min_runway_days:.1f} days")
+
+    result = {
+        "address": address,
+        "credit_balance": credit_balance,
+        "cost_per_second": cost_per_second,
+        "runway_days": runway_days,
+    }
+
+    if errors:
+        raise HTTPException(status_code=503, detail={"errors": errors, **result})
+
+    return {"status": "ok", **result}
+
+
 @app.get("/x402-credits")
 async def check_x402_credits(min_balance: float = 0):
     """Check Aleph credit balance for the x402 selling address.

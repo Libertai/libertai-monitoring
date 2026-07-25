@@ -9,6 +9,7 @@ class _Config:
     ALEPH_AGENT_CHANNEL: str
     LIBERTAI_INSTANCES_ADDRESS: str
     LIBERTAI_X402_ADDRESS: str
+    LIBERCLAW_INSTANCES_ADDRESS: str
 
     LOG_LEVEL: int
     LOG_FILE: str | None
@@ -20,6 +21,7 @@ class _Config:
         self.ALEPH_AGENT_CHANNEL = os.getenv("ALEPH_AGENT_CHANNEL")
         self.LIBERTAI_INSTANCES_ADDRESS = os.getenv("LIBERTAI_INSTANCES_ADDRESS")
         self.LIBERTAI_X402_ADDRESS = os.getenv("LIBERTAI_X402_ADDRESS")
+        self.LIBERCLAW_INSTANCES_ADDRESS = os.getenv("LIBERCLAW_INSTANCES_ADDRESS")
 
         # Configure logging
         log_level_str = os.getenv("LOG_LEVEL", "INFO").upper()
